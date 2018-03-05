@@ -1,5 +1,7 @@
 package http.tct.jony.com.tcthttp.http;
 
+import android.util.Log;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -17,7 +19,7 @@ public class ThreadPoolManager {
     //定义请求队列  容量 阻塞 性能优化
     private LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue();
     //添加任务
-    public void excute(Runnable runnable){
+    public void execute(Runnable runnable){
         try {
             queue.put(runnable);
         } catch (InterruptedException e) {
@@ -48,17 +50,19 @@ public class ThreadPoolManager {
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
+            while (true){
             //1.从队列中取出任务
+                Runnable task = null;
             try {
-                Runnable runnable = queue.take();
+                 task = queue.take();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             //2.把任务放到处理中心执行
-            while (true){
-                if (runnable != null){
-                    threadPoolExecutor.execute(runnable);
-                }
+            Log.e("ThreadPoolManager","Running");
+            if (runnable != null){
+                threadPoolExecutor.execute(task);
+            }
             }
         }
     };
